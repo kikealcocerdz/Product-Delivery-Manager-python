@@ -2,3 +2,5 @@ venv
 .idea
 .pybuilder
 target
+__pycache__
+vscode
