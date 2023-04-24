@@ -6,9 +6,7 @@ from uc3m_logistics.order_management_exception import OrderManagementException
 
 class PhoneNumberAttribute(Attribute):
 
-    def __init__(self, value:str):
-        self.myregex = re.compile(r"^(\+)[0-9]{11}")
-        super().__init__(value)
+    myregex = re.compile(r"^(\+)[0-9]{11}")
 
     def validate(self, value):
         res = self.myregex.fullmatch(value)

@@ -1,12 +1,10 @@
 from .json_store import JsonStore
 
 from ..order_management_exception import OrderManagementException
-from .. import JSON_FILES_PATH
 
+from uc3m_logistics.order_manager_config import JSON_FILES_PATH
 class OrderRequestStore(JsonStore):
     _FILE_PATH = JSON_FILES_PATH + "orders_store.json"
-
-
 
     def add_item(self, new_item):
         found = False

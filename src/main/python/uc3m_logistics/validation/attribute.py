@@ -12,6 +12,5 @@ class Attribute(ABC):
         pass
 
     @property
-    @abstractmethod
     def value(self):
         return self.__value

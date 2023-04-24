@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import json
+from ..order_management_exception import OrderManagementException
 
 class JsonStore(ABC):
     _FILE_PATH = ""
@@ -13,16 +14,17 @@ class JsonStore(ABC):
                 data = json.load(file)
         except FileNotFoundError as ex:
             # file not found
+            raise OrderManagementException("Store not found")
 
 
 
     def save(self):
         try:
-            with open(self)
-                json.dump(data, file, indent=2)
+            with open(self._FILE_PATH, "w+", encoding="utf-8", newline="") as file:
+                json.dump(self.__data, file, indent=2)
 
         except FileNotFoundError as ex:
-            raise OrderManagementException("Wrong file or file path") form ex
+            raise OrderManagementException("Wrong file or file path") from ex
 
 
     @abstractmethod

@@ -3,8 +3,6 @@ import hashlib
 import json
 from datetime import datetime
 
-from validation.order_type_attribute import OrderTypeAttribute
-
 class OrderRequest:
     """Class representing the register of the order in the system"""
     #pylint: disable=too-many-arguments
@@ -12,7 +10,7 @@ class OrderRequest:
                   delivery_address, phone_number, zip_code ):
         self.__product_id = product_id
         self.__delivery_address = delivery_address
-        self.__order_type = OrderTypeAttribute(order_type).value
+        self.__order_type = order_type
         self.__phone_number = phone_number
         self.__zip_code = zip_code
         justnow = datetime.utcnow()

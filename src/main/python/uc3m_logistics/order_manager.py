@@ -9,6 +9,13 @@ from .order_management_exception import OrderManagementException
 from .order_shipping import OrderShipping
 from .order_manager_config import JSON_FILES_PATH
 from .send_product_input import SendProductInput
+from .stores.order_request_store import OrderRequestStore
+from .validation.product_id_attribute import ProductIdAttribute
+from .validation.order_type_attribute import OrderTypeAttribute
+from .validation.address_attribute import AddressAttribute
+from .validation.phone_number_attribute import PhoneNumberAttribute
+from .validation.zip_code_attribute import ZipCodeAttribute
+from .validation.email_attribute import EmailAttribute
 
 
 class OrderManager:
@@ -16,36 +23,6 @@ class OrderManager:
 
     def __init__(self):
         pass
-
-    @staticmethod
-    def validate_ean13(ean13):
-        """method vor validating a ean13 code"""
-        # PLEASE INCLUDE HERE THE CODE FOR VALIDATING THE EAN13
-        # RETURN TRUE IF THE EAN13 IS RIGHT, OR FALSE IN OTHER CASE
-        checksum = 0
-        code_read = -1
-        res = False
-        regex_ean13 = re.compile("^[0-9]{13}$")
-        valid_ean13_format = regex_ean13.fullmatch(ean13)
-        if valid_ean13_format is None:
-            raise OrderManagementException("Invalid EAN13 code string")
-
-        for i, digit in enumerate(reversed(ean13)):
-            try:
-                current_digit = int(digit)
-            except ValueError as v_e:
-                raise OrderManagementException("Invalid EAN13 code string") from v_e
-            if i == 0:
-                code_read = current_digit
-            else:
-                checksum += (current_digit) * 3 if (i % 2 != 0) else current_digit
-        control_digit = (10 - (checksum % 10)) % 10
-
-        if (code_read != -1) and (code_read == control_digit):
-            res = True
-        else:
-            raise OrderManagementException("Invalid EAN13 control digit")
-        return res
 
     @staticmethod
     def validate_tracking_code(t_c):
@@ -118,39 +95,19 @@ class OrderManager:
             raise OrderManagementException("Wrong file or file path") from ex
 
     # pylint: disable=too-many-arguments
-    def register_order(self, product_id,
-                       order_type,
-                       address,
-                       phone_number,
-                       zip_code):
+    def register_order(self, product_id: str,
+                       order_type: str,
+                       address: str,
+                       phone_number: str,
+                       zip_code: str) -> str:
         """Register the orders into the order's file"""
-
-        myregex = re.compile(r"(Regular|Premium)")
-        res = myregex.fullmatch(order_type)
-        if not res:
-            raise OrderManagementException("order_type is not valid")
-
-        myregex = re.compile(r"^(?=^.{20,100}$)(([a-zA-Z0-9]+\s)+[a-zA-Z0-9]+)$")
-        res = myregex.fullmatch(address)
-        if not res:
-            raise OrderManagementException("address is not valid")
-
-        myregex = re.compile(r"^(\+)[0-9]{11}")
-        res = myregex.fullmatch(phone_number)
-        if not res:
-            raise OrderManagementException("phone number is not valid")
-        if zip_code.isnumeric() and len(zip_code) == 5:
-            if (int(zip_code) > 52999 or int(zip_code) < 1000):
-                raise OrderManagementException("zip_code is not valid")
-        else:
-            raise OrderManagementException("zip_code format is not valid")
-        if self.validate_ean13(product_id):
-            my_order = OrderRequest(product_id,
-                                    order_type,
-                                    address,
-                                    phone_number,
-                                    zip_code)
-
+        
+        my_order = OrderRequest(ProductIdAttribute(product_id).value,
+                                OrderTypeAttribute(order_type).value,
+                                AddressAttribute(address).value,
+                                PhoneNumberAttribute(phone_number).value,
+                                ZipCodeAttribute(zip_code).value)
+                                
         self.save_store(my_order)
 
         return my_order.order_id

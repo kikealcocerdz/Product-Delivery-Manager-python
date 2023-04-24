@@ -1,10 +1,15 @@
-
 from .attribute import Attribute
+import re
+
+from uc3m_logistics.order_management_exception import OrderManagementException
+
 
 class EmailAttribute(Attribute):
 
-    def __init__(self, value: str):
-        super().__init__(value)
-
+    regex_email = r'^[a-z0-9]+([\._]?[a-z0-9]+)+[@](\w+[.])+\w{2,3}$'
+    myregex = re.compile(regex_email)
+    
     def validate(self, value):
-
+        res = self.myregex.fullmatch(value)
+        if not res:
+            raise OrderManagementException("Email is not valid")
