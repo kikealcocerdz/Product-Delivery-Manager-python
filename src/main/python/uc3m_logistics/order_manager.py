@@ -8,6 +8,7 @@ from .order_request import OrderRequest
 from .order_management_exception import OrderManagementException
 from .order_shipping import OrderShipping
 from .order_manager_config import JSON_FILES_PATH
+from .send_product_input import SendProductInput
 
 
 class OrderManager:
@@ -157,14 +158,14 @@ class OrderManager:
     # pylint: disable=too-many-locals
     def send_product(self, input_file):
         """Sends the order included in the input_file"""
-        try:
-            with open(input_file, "r", encoding="utf-8", newline="") as file:
-                data = json.load(file)
-        except FileNotFoundError as ex:
-            # file is not found
-            raise OrderManagementException("File is not found") from ex
-        except json.JSONDecodeError as ex:
-            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
+        send_product_input = SendProductInput.from_json(input_file)
+
+        order_request = OrderRequestStore().find_item_by_key(send_product_input.order_id)
+
+        order_shipping = OrderShipping(product_id=order_request.product_id,
+                                       order_id=send_product_input.order_id,
+                                       order_type=order_request.order_type,
+                                       delivery_email=send_product_input.email)
 
         # check all the information
         try:
@@ -225,6 +226,8 @@ class OrderManager:
 
     def deliver_product(self, tracking_code):
         """Register the delivery of the product"""
+        order_shipping = OrderShipping.from_tracking_code(tracking_code)
+
         self.validate_tracking_code(tracking_code)
 
         # check if this tracking_code is in shipments_store
@@ -262,7 +265,7 @@ class OrderManager:
         except json.JSONDecodeError as ex:
             raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
 
-            # append the delivery info
+        # append the delivery info
         data_list.append(str(tracking_code))
         data_list.append(str(datetime.utcnow()))
         try:

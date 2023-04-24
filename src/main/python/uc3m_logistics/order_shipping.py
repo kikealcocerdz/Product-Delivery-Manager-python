@@ -29,6 +29,10 @@ class OrderShipping():
                self.__order_id + ",issuedate:" + str(self.__issued_at) + \
                ",deliveryday:" + str(self.__delivery_day) + "}"
 
+    @staticmethod
+    def from_tracking_code(tracking_code: str):
+        tracking
+
     @property
     def product_id( self ):
         """Property that represents the product_id of the order"""
