@@ -6,3 +6,4 @@ from .order_management_exception import OrderManagementException
 from .order_shipping import OrderShipping
 from .order_manager_config import JSON_FILES_PATH
 from .order_manager_config import JSON_FILES_RF2_PATH
+from .singleton_metaclass import SingletonMeta

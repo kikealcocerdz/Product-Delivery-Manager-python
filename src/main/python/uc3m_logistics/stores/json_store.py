@@ -1,8 +1,12 @@
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 import json
 from ..order_management_exception import OrderManagementException
+from ..singleton_metaclass import SingletonMeta
 
-class JsonStore(ABC):
+class FinalMeta(ABCMeta, SingletonMeta):
+    pass
+
+class JsonStore(ABC, metaclass=FinalMeta):
     _FILE_PATH = ""
 
     def __init__(self):
@@ -14,8 +18,12 @@ class JsonStore(ABC):
                 data = json.load(file)
         except FileNotFoundError as ex:
             # file not found
-            raise OrderManagementException("Store not found")
-
+            data = []
+            with open(self._FILE_PATH, "w", encoding="utf-8", newline="") as file:
+                json.dump(data, file, indent=2)
+        except json.decoder.JSONDecodeError as ex:
+            raise OrderManagementException("Could not read store")
+        return data
 
 
     def save(self):

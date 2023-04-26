@@ -6,3 +6,4 @@ from .email_attribute import EmailAttribute
 from .address_attribute import AddressAttribute
 from .zip_code_attribute import ZipCodeAttribute
 from .phone_number_attribute import PhoneNumberAttribute
+from .tracking_code_attribute import TrackingCodeAttribute

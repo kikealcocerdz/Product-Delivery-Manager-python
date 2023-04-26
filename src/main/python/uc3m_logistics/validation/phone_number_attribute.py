@@ -3,7 +3,6 @@ import re
 
 from uc3m_logistics.order_management_exception import OrderManagementException
 
-
 class PhoneNumberAttribute(Attribute):
 
     myregex = re.compile(r"^(\+)[0-9]{11}")

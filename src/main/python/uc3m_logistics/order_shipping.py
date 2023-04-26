@@ -1,6 +1,9 @@
 """Contains the class OrderShipping"""
 from datetime import datetime
 import hashlib
+from .validation.product_id_attribute import ProductIdAttribute
+from .validation.email_attribute import EmailAttribute
+from .validation.order_id_attribute import OrderIdAttribute
 
 #pylint: disable=too-many-instance-attributes
 class OrderShipping():
@@ -9,9 +12,9 @@ class OrderShipping():
     def __init__(self, product_id, order_id, delivery_email, order_type):
         self.__alg = "SHA-256"
         self.__type = "DS"
-        self.__product_id = product_id
-        self.__order_id = order_id
-        self.__delivery_email = delivery_email
+        self.__product_id = ProductIdAttribute(product_id).value
+        self.__order_id = OrderIdAttribute(order_id).value
+        self.__delivery_email = EmailAttribute(delivery_email).value
         justnow = datetime.utcnow()
         self.__issued_at = datetime.timestamp(justnow)
         if order_type == "Regular":

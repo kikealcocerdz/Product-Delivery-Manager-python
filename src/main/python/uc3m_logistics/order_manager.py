@@ -10,27 +10,14 @@ from .order_shipping import OrderShipping
 from .order_manager_config import JSON_FILES_PATH
 from .send_product_input import SendProductInput
 from .stores.order_request_store import OrderRequestStore
-from .validation.product_id_attribute import ProductIdAttribute
-from .validation.order_type_attribute import OrderTypeAttribute
-from .validation.address_attribute import AddressAttribute
-from .validation.phone_number_attribute import PhoneNumberAttribute
-from .validation.zip_code_attribute import ZipCodeAttribute
-from .validation.email_attribute import EmailAttribute
+from .validation.tracking_code_attribute import TrackingCodeAttribute
+from .singleton_metaclass import SingletonMeta
 
-
-class OrderManager:
+class OrderManager(metaclass=SingletonMeta):
     """Class for providing the methods for managing the orders process"""
 
     def __init__(self):
         pass
-
-    @staticmethod
-    def validate_tracking_code(t_c):
-        """Method for validating sha256 values"""
-        myregex = re.compile(r"[0-9a-fA-F]{64}$")
-        res = myregex.fullmatch(t_c)
-        if not res:
-            raise OrderManagementException("tracking_code format is not valid")
 
     @staticmethod
     def save_store(data):
@@ -102,11 +89,7 @@ class OrderManager:
                        zip_code: str) -> str:
         """Register the orders into the order's file"""
         
-        my_order = OrderRequest(ProductIdAttribute(product_id).value,
-                                OrderTypeAttribute(order_type).value,
-                                AddressAttribute(address).value,
-                                PhoneNumberAttribute(phone_number).value,
-                                ZipCodeAttribute(zip_code).value)
+        my_order = OrderRequest(product_id, order_type, address, phone_number, zip_code)
                                 
         self.save_store(my_order)
 
@@ -115,14 +98,14 @@ class OrderManager:
     # pylint: disable=too-many-locals
     def send_product(self, input_file):
         """Sends the order included in the input_file"""
-        send_product_input = SendProductInput.from_json(input_file)
-
-        order_request = OrderRequestStore().find_item_by_key(send_product_input.order_id)
-
-        order_shipping = OrderShipping(product_id=order_request.product_id,
-                                       order_id=send_product_input.order_id,
-                                       order_type=order_request.order_type,
-                                       delivery_email=send_product_input.email)
+        try:
+            with open(input_file, "r", encoding="utf-8", newline="") as file:
+                data = json.load(file)
+        except FileNotFoundError as ex:
+            # file is not found
+            raise OrderManagementException("File is not found") from ex
+        except json.JSONDecodeError as ex:
+            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
 
         # check all the information
         try:
@@ -181,11 +164,10 @@ class OrderManager:
 
         return my_sign.tracking_code
 
+
     def deliver_product(self, tracking_code):
         """Register the delivery of the product"""
-        order_shipping = OrderShipping.from_tracking_code(tracking_code)
-
-        self.validate_tracking_code(tracking_code)
+        tracking_code = TrackingCodeAttribute(tracking_code).value
 
         # check if this tracking_code is in shipments_store
         shipments_store_file = JSON_FILES_PATH + "shipments_store.json"
@@ -222,7 +204,7 @@ class OrderManager:
         except json.JSONDecodeError as ex:
             raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
 
-        # append the delivery info
+            # append the delivery info
         data_list.append(str(tracking_code))
         data_list.append(str(datetime.utcnow()))
         try:
@@ -231,3 +213,4 @@ class OrderManager:
         except FileNotFoundError as ex:
             raise OrderManagementException("Wrong file or file path") from ex
         return True
+
