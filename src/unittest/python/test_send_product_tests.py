@@ -75,38 +75,6 @@ param_list_nok = [("node10_deleted.json", "JSON Decode Error - Wrong JSON Format
 class TestSendProduct(TestCase):
     """Class for testing get_vaccine_date"""
 
-    @freeze_time("2023-03-08")
-    def test_send_product_regular(self):
-        """test ok"""
-        file_test = JSON_FILES_RF2_PATH + "valid.json"
-        my_manager = OrderManager()
-
-        # first , prepare the test , remove orders_store
-        file_orders_store = JSON_FILES_PATH + "orders_store.json"
-        file_shipments_store = JSON_FILES_PATH + "shipments_store.json"
-        if os.path.isfile(file_orders_store):
-            os.remove(file_orders_store)
-        if os.path.isfile(file_shipments_store):
-            os.remove(file_shipments_store)
-        # add an order to the store
-        my_manager.register_order(product_id="8421691423220",
-                                  address="calle con20chars1esp",
-                                  order_type="Regular",
-                                  phone_number="+34123456789",
-                                  zip_code="01000")
-        # check the method
-        value = my_manager.send_product(file_test)
-        self.assertEqual(value, "847dfd443d86c9c222242010c11a44bd9a09c37b42b6e956db97ba173abefe83")
-
-        # check shipments_store
-        with open(file_shipments_store, "r", encoding="utf-8", newline="") as file:
-            data_list = json.load(file)
-        found = False
-        for item in data_list:
-            if item["_OrderShipping__tracking_code"] == \
-                    "847dfd443d86c9c222242010c11a44bd9a09c37b42b6e956db97ba173abefe83":
-                found = True
-        self.assertTrue(found)
 
     @freeze_time("2023-03-08")
     def test_send_product_premium(self):
@@ -138,6 +106,39 @@ class TestSendProduct(TestCase):
         for item in data_list:
             if item["_OrderShipping__tracking_code"] == \
                     "4677574bebf6737df4d85993dace90d988595649c918dad033151235749887ab":
+                found = True
+        self.assertTrue(found)
+
+    @freeze_time("2023-03-08")
+    def test_send_product_regular(self):
+        """test ok"""
+        file_test = JSON_FILES_RF2_PATH + "valid.json"
+        my_manager = OrderManager()
+
+        # first , prepare the test , remove orders_store
+        file_orders_store = JSON_FILES_PATH + "orders_store.json"
+        file_shipments_store = JSON_FILES_PATH + "shipments_store.json"
+        if os.path.isfile(file_orders_store):
+            os.remove(file_orders_store)
+        if os.path.isfile(file_shipments_store):
+            os.remove(file_shipments_store)
+        # add an order to the store
+        my_manager.register_order(product_id="8421691423220",
+                                  address="calle con20chars1esp",
+                                  order_type="Regular",
+                                  phone_number="+34123456789",
+                                  zip_code="01000")
+        # check the method
+        value = my_manager.send_product(file_test)
+        self.assertEqual(value, "847dfd443d86c9c222242010c11a44bd9a09c37b42b6e956db97ba173abefe83")
+
+        # check shipments_store
+        with open(file_shipments_store, "r", encoding="utf-8", newline="") as file:
+            data_list = json.load(file)
+        found = False
+        for item in data_list:
+            if item["_OrderShipping__tracking_code"] == \
+                    "847dfd443d86c9c222242010c11a44bd9a09c37b42b6e956db97ba173abefe83":
                 found = True
         self.assertTrue(found)
 
@@ -218,3 +219,4 @@ class TestSendProduct(TestCase):
 
         self.assertEqual(exception_message, "Orders' data have been manipulated")
         self.assertEqual(hash_new, hash_original)
+        self.__order_manager = OrderManager()

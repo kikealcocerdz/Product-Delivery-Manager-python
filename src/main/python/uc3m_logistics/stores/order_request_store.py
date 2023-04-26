@@ -4,14 +4,13 @@ from datetime import datetime
 from .json_store import JsonStore
 
 from ..order_management_exception import OrderManagementException
-from ..order_request import OrderRequest
 
 from uc3m_logistics.order_manager_config import JSON_FILES_PATH
 
 class OrderRequestStore(JsonStore):
     _FILE_PATH = JSON_FILES_PATH + "orders_store.json"
 
-    def add_item(self, new_item: OrderRequest):
+    def add_item(self, new_item):
         found = False
         for item in self.data:
             if item["_OrderRequest__order_id"] == new_item.order_id:

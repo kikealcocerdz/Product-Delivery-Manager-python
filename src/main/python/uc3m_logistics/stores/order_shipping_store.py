@@ -1,7 +1,9 @@
-
+from ..order_manager_config import JSON_FILES_PATH
 from .json_store import JsonStore
 
 class OrderShippingStore(JsonStore):
+    _FILE_PATH = JSON_FILES_PATH + "shipments_store.json"
+
 
     def find_item_by_key(self, key: str):
         for item in self.data:
@@ -10,6 +12,6 @@ class OrderShippingStore(JsonStore):
 
         return None
 
-    def add_item(self, new_item):
-        self.data.append(new_item.__dict__)
+    def add_item(self, new_shipping):
+        self.data.append(new_shipping.__dict__)
         self.save()

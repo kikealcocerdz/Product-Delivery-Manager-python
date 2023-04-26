@@ -12,4 +12,4 @@ class EmailAttribute(Attribute):
     def validate(self, value):
         res = self.myregex.fullmatch(value)
         if not res:
-            raise OrderManagementException("Email is not valid")
+            raise OrderManagementException("contact email is not valid")

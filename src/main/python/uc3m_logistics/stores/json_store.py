@@ -7,7 +7,7 @@ class FinalMeta(ABCMeta, SingletonMeta):
     pass
 
 class JsonStore(ABC, metaclass=FinalMeta):
-    _FILE_PATH = ""
+    _FILE_PATH = None
 
     def __init__(self):
         self.__data = self.load()

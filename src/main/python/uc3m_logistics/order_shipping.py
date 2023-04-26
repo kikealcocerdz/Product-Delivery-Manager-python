@@ -4,6 +4,9 @@ import hashlib
 from .validation.product_id_attribute import ProductIdAttribute
 from .validation.email_attribute import EmailAttribute
 from .validation.order_id_attribute import OrderIdAttribute
+from .send_product_input import SendProductInput
+from .stores.order_request_store import OrderRequestStore
+from .stores.order_shipping_store import OrderShippingStore
 
 #pylint: disable=too-many-instance-attributes
 class OrderShipping():
@@ -34,7 +37,18 @@ class OrderShipping():
 
     @staticmethod
     def from_tracking_code(tracking_code: str):
-        tracking
+        pass
+
+    def save_to_store(self):
+        OrderShippingStore().add_item(self)
+
+    @classmethod
+    def from_send_input_file(cls, input_file: str):
+        send_product_input = SendProductInput.from_json(input_file)
+        order_request = OrderRequestStore().find_item_by_key(send_product_input.order_id)
+        return cls(order_request.product_id, order_request.order_id,
+                     send_product_input.email, order_request.order_type)
+
 
     @property
     def product_id( self ):

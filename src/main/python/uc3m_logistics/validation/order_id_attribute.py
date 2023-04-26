@@ -11,6 +11,6 @@ class OrderIdAttribute(Attribute):
     def validate(self, value):
         res = self.myregex.fullmatch(value)
         if not res:
-            raise OrderManagementException("OrderID is not valid")
+            raise OrderManagementException("order id is not valid")
 
     

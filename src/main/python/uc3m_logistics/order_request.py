@@ -7,8 +7,7 @@ from .validation.order_type_attribute import OrderTypeAttribute
 from .validation.address_attribute import AddressAttribute
 from .validation.phone_number_attribute import PhoneNumberAttribute
 from .validation.zip_code_attribute import ZipCodeAttribute
-from .validation.email_attribute import EmailAttribute
-from .validation.order_id_attribute import OrderIdAttribute
+from .stores.order_request_store import OrderRequestStore
 
 class OrderRequest:
     """Class representing the register of the order in the system"""
@@ -25,6 +24,9 @@ class OrderRequest:
 
     def __str__(self):
         return "OrderRequest:" + json.dumps(self.__dict__)
+
+    def save_to_store(self):
+        OrderRequestStore().add_item(self)
 
     @property
     def delivery_address( self ):

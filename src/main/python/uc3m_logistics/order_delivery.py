@@ -11,7 +11,7 @@ class OrderDelivery:
         self.__delivery_date = str(datetime.utcnow())
 
     def save_to_store(self):
-        pass
+        OrderDeliveryStore().add_item(self)
 
     @property
     def tracking_code(self):

@@ -5,9 +5,6 @@ from ..order_management_exception import OrderManagementException
 
 class TrackingCodeAttribute(Attribute):
 
-    def __init__(self, value):
-        super().__init__(value)
-
     def validate(self, value):
         """Method for validating sha256 values"""
         myregex = re.compile(r"[0-9a-fA-F]{64}$")
