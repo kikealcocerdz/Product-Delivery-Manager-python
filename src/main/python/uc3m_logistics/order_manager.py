@@ -89,9 +89,10 @@ class OrderManager(metaclass=SingletonMeta):
                        zip_code: str) -> str:
         """Register the orders into the order's file"""
         
+        store = OrderRequestStore()
         my_order = OrderRequest(product_id, order_type, address, phone_number, zip_code)
-                                
-        self.save_store(my_order)
+        
+        store.add_item(my_order)
 
         return my_order.order_id
 
