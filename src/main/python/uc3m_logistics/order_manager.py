@@ -82,89 +82,27 @@ class OrderManager(metaclass=SingletonMeta):
             raise OrderManagementException("Wrong file or file path") from ex
 
     # pylint: disable=too-many-arguments
-    def register_order(self, product_id: str,
+    @staticmethod
+    def register_order(product_id: str,
                        order_type: str,
                        address: str,
                        phone_number: str,
                        zip_code: str) -> str:
         """Register the orders into the order's file"""
         
-        store = OrderRequestStore()
-        my_order = OrderRequest(product_id, order_type, address, phone_number, zip_code)
-        
-        store.add_item(my_order)
+        order_request = OrderRequest(product_id, order_type, address, phone_number, zip_code)
 
-        return my_order.order_id
+        order_request.save_to_store()
 
-    # pylint: disable=too-many-locals
-    def send_product(self, input_file):
+        return order_request.order_id
+
+    @staticmethod
+    def send_product(input_file):
         """Sends the order included in the input_file"""
-        try:
-            with open(input_file, "r", encoding="utf-8", newline="") as file:
-                data = json.load(file)
-        except FileNotFoundError as ex:
-            # file is not found
-            raise OrderManagementException("File is not found") from ex
-        except json.JSONDecodeError as ex:
-            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
+        order_shipping = OrderShipping.from_send_input_file(input_file)
+        order_shipping.save_to_store()
 
-        # check all the information
-        try:
-            myregex = re.compile(r"[0-9a-fA-F]{32}$")
-            res = myregex.fullmatch(data["OrderID"])
-            if not res:
-                raise OrderManagementException("order id is not valid")
-        except KeyError as ex:
-            raise OrderManagementException("Bad label") from ex
-
-        try:
-            regex_email = r'^[a-z0-9]+([\._]?[a-z0-9]+)+[@](\w+[.])+\w{2,3}$'
-            myregex = re.compile(regex_email)
-            res = myregex.fullmatch(data["ContactEmail"])
-            if not res:
-                raise OrderManagementException("contact email is not valid")
-        except KeyError as ex:
-            raise OrderManagementException("Bad label") from ex
-        file_store = JSON_FILES_PATH + "orders_store.json"
-
-        with open(file_store, "r", encoding="utf-8", newline="") as file:
-            data_list = json.load(file)
-        found = False
-        for item in data_list:
-            if item["_OrderRequest__order_id"] == data["OrderID"]:
-                found = True
-                # retrieve the orders data
-                product_id = item["_OrderRequest__product_id"]
-                address = item["_OrderRequest__delivery_address"]
-                order_type = item["_OrderRequest__order_type"]
-                phone_number = item["_OrderRequest__phone_number"]
-                order_timestamp = item["_OrderRequest__time_stamp"]
-                zip_code = item["_OrderRequest__zip_code"]
-                # set the time when the order was registered for checking the md5
-                with freeze_time(datetime.fromtimestamp(order_timestamp).date()):
-                    order = OrderRequest(product_id=product_id,
-                                         delivery_address=address,
-                                         order_type=order_type,
-                                         phone_number=phone_number,
-                                         zip_code=zip_code)
-
-                if order.order_id != data["OrderID"]:
-                    raise OrderManagementException("Orders' data have been manipulated")
-
-        if not found:
-            raise OrderManagementException("order_id not found")
-
-        my_sign = OrderShipping(product_id=product_id,
-                                order_id=data["OrderID"],
-                                order_type=order_type,
-                                delivery_email=data["ContactEmail"])
-
-        # save the OrderShipping in shipments_store.json
-
-        self.save_orders_shipped(my_sign)
-
-        return my_sign.tracking_code
-
+        return order_shipping.tracking_code
 
     def deliver_product(self, tracking_code):
         """Register the delivery of the product"""
