@@ -22,18 +22,19 @@ class JsonStore(ABC, metaclass=FinalMeta):
             with open(self._FILE_PATH, "w", encoding="utf-8", newline="") as file:
                 json.dump(data, file, indent=2)
         except json.decoder.JSONDecodeError as ex:
-            raise OrderManagementException("Could not read store")
+            raise OrderManagementException("JSON Decode Error - Wrong JSON Format")
         return data
 
+    def refresh(self):
+        self.__data = self.load()
 
     def save(self):
         try:
-            with open(self._FILE_PATH, "w+", encoding="utf-8", newline="") as file:
+            with open(self._FILE_PATH, "w", encoding="utf-8", newline="") as file:
                 json.dump(self.__data, file, indent=2)
 
         except FileNotFoundError as ex:
             raise OrderManagementException("Wrong file or file path") from ex
-
 
     @abstractmethod
     def add_item(self):

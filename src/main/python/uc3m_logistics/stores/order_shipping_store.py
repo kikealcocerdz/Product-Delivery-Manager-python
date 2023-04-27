@@ -6,6 +6,9 @@ class OrderShippingStore(JsonStore):
 
 
     def find_item_by_key(self, key: str):
+        # refresh the store
+        self.refresh()
+
         for item in self.data:
             if item["_OrderShipping__tracking_code"]:
                 return item
@@ -13,5 +16,6 @@ class OrderShippingStore(JsonStore):
         return None
 
     def add_item(self, new_shipping):
+        self.refresh()
         self.data.append(new_shipping.__dict__)
         self.save()

@@ -11,11 +11,12 @@ class OrderRequestStore(JsonStore):
     _FILE_PATH = JSON_FILES_PATH + "orders_store.json"
 
     def add_item(self, new_item):
+        self.refresh()
         found = False
         for item in self.data:
             if item["_OrderRequest__order_id"] == new_item.order_id:
                 found = True
-        if not found:
+        if found is False:
             self.data.append(new_item.__dict__)
         else:
             raise OrderManagementException("order_id is already registered in orders_store")
@@ -23,12 +24,15 @@ class OrderRequestStore(JsonStore):
         self.save()
 
     def find_item_by_key(self, key: str):
-        found_item: dict or None = None
+        # refresh the store before taking an action
+        self.refresh()
+        found_item = None
 
         for item in self.data:
             if item["_OrderRequest__order_id"] == key:
                 found_item = item
                 break
+
 
         if found_item:
             product_id = found_item["_OrderRequest__product_id"]

@@ -47,7 +47,7 @@ class OrderShipping():
         send_product_input = SendProductInput.from_json(input_file)
         order_request = OrderRequestStore().find_item_by_key(send_product_input.order_id)
         return cls(order_request.product_id, order_request.order_id,
-                     send_product_input.email, order_request.order_type)
+                   send_product_input.email, order_request.order_type)
 
 
     @property
