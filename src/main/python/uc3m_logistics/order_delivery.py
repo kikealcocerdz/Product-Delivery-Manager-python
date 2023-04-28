@@ -1,20 +1,24 @@
-
+# pylint: disable=missing-module-docstring
+import json
 from datetime import datetime
-from uc3m_logistics.stores.order_delivery_store import OrderDeliveryStore
-from .validation.tracking_code_attribute import TrackingCodeAttribute
 from uc3m_logistics.order_management_exception import OrderManagementException
 from uc3m_logistics.order_manager_config import JSON_FILES_PATH
-import json
+from uc3m_logistics.stores.order_delivery_store import OrderDeliveryStore
+from uc3m_logistics.validation.tracking_code_attribute import TrackingCodeAttribute
+
 
 class OrderDelivery:
+    """Class to check if the order is correct"""
 
     def __init__(self, tracking_code):
         self.__tracking_code = TrackingCodeAttribute(tracking_code).value
         self.__delivery_date = str(datetime.utcnow())
 
+    # pylint: disable=missing-function-docstring
     def save_to_store(self):
         OrderDeliveryStore().add_item(self)
 
+    # pylint: disable=missing-function-docstring
     @property
     def tracking_code(self):
         return self.__tracking_code
@@ -26,7 +30,7 @@ class OrderDelivery:
     @property
     def delivery_date(self):
         return self.__delivery_date
-    
+
     @delivery_date.setter
     def delivery_date(self, value):
         self.__delivery_date = value
@@ -60,6 +64,3 @@ class OrderDelivery:
         if delivery_date != today:
             raise OrderManagementException("Today is not the delivery date")
         return OrderDelivery(tracking_code)
-
-    def save_to_store(self):
-        OrderDeliveryStore().add_item(self)

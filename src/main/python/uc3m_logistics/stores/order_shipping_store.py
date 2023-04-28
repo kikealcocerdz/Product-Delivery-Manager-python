@@ -1,9 +1,11 @@
-from ..order_manager_config import JSON_FILES_PATH
-from .json_store import JsonStore
+# pylint: disable=missing-module-docstring
+from uc3m_logistics.order_manager_config import JSON_FILES_PATH
+from uc3m_logistics.stores.json_store import JsonStore
+
 
 class OrderShippingStore(JsonStore):
+    """Store for OrderShipping"""
     _FILE_PATH = JSON_FILES_PATH + "shipments_store.json"
-
 
     def find_item_by_key(self, key: str):
         # refresh the store

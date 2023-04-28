@@ -1,9 +1,11 @@
+# pylint: disable=missing-module-docstring
 import re
+from uc3m_logistics.order_management_exception import OrderManagementException
+from uc3m_logistics.validation.attribute import Attribute
 
-from .attribute import Attribute
-from ..order_management_exception import OrderManagementException
 
 class TrackingCodeAttribute(Attribute):
+    """tracking_code validation"""
 
     def validate(self, value):
         """Method for validating sha256 values"""

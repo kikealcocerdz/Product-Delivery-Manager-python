@@ -1,8 +1,11 @@
+# pylint: disable=missing-module-docstring
 import re
-from ..order_management_exception import OrderManagementException
-from .attribute import Attribute
+from uc3m_logistics.order_management_exception import OrderManagementException
+from uc3m_logistics.validation.attribute import Attribute
+
 
 class ProductIdAttribute(Attribute):
+    """product_id validation"""
 
     def validate(self, value: str):
         """method vor validating a ean13 code"""
@@ -23,7 +26,7 @@ class ProductIdAttribute(Attribute):
             if i == 0:
                 code_read = current_digit
             else:
-                checksum += (current_digit) * 3 if (i % 2 != 0) else current_digit
+                checksum += current_digit * 3 if (i % 2 != 0) else current_digit
         control_digit = (10 - (checksum % 10)) % 10
 
         if (code_read != -1) and (code_read == control_digit):

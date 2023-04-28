@@ -1,17 +1,18 @@
+# pylint: disable=missing-module-docstring
 import json
+from uc3m_logistics.order_management_exception import OrderManagementException
+from uc3m_logistics.validation.order_id_attribute import OrderIdAttribute
+from uc3m_logistics.validation.email_attribute import EmailAttribute
 
-from .order_management_exception import OrderManagementException
-
-from .validation.order_id_attribute import OrderIdAttribute
-from .validation.email_attribute import EmailAttribute
 
 class SendProductInput:
+    """Class for taking the correct arguments to send_product"""
 
     def __init__(self, order_id, contact_email):
         self.__order_id = OrderIdAttribute(order_id).value
         self.__email = EmailAttribute(contact_email).value
 
-
+    # pylint: disable=missing-function-docstring
     @property
     def order_id(self):
         return self.__order_id
@@ -38,7 +39,6 @@ class SendProductInput:
             raise OrderManagementException("File is not found") from ex
         except json.JSONDecodeError as ex:
             raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from ex
-        
         if "OrderID" not in data:
             raise OrderManagementException("Bad label")
         if "ContactEmail" not in data:

@@ -1,13 +1,13 @@
+# pylint: disable=missing-module-docstring
 from freezegun import freeze_time
 from datetime import datetime
-
-from .json_store import JsonStore
-
-from ..order_management_exception import OrderManagementException
-
+from uc3m_logistics.stores.json_store import JsonStore
+from uc3m_logistics.order_management_exception import OrderManagementException
 from uc3m_logistics.order_manager_config import JSON_FILES_PATH
 
+
 class OrderRequestStore(JsonStore):
+    """Store for OrderRequest"""
     _FILE_PATH = JSON_FILES_PATH + "orders_store.json"
 
     def add_item(self, new_item):
@@ -33,7 +33,6 @@ class OrderRequestStore(JsonStore):
                 found_item = item
                 break
 
-
         if found_item:
             product_id = found_item["_OrderRequest__product_id"]
             address = found_item["_OrderRequest__delivery_address"]
@@ -43,17 +42,13 @@ class OrderRequestStore(JsonStore):
             order_timestamp = found_item["_OrderRequest__time_stamp"]
 
             with freeze_time(datetime.fromtimestamp(order_timestamp).date()):
-                from uc3m_logistics.order_request import OrderRequest
-                order = OrderRequest(
+                import uc3m_logistics.order_request
+                order = uc3m_logistics.order_request.OrderRequest(
                     product_id, order_type,
-                    address, phone_number, zip_code 
-                )
-            
+                    address, phone_number, zip_code)
             if order.order_id != found_item["_OrderRequest__order_id"]:
                 raise OrderManagementException("Orders' data have been manipulated")
-
             return order
         else:
             raise OrderManagementException("Order_id not found in order_requests store")
-            
         return None

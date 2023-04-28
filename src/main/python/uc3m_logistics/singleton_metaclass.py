@@ -1,7 +1,6 @@
-
-
+# pylint: disable=missing-module-docstring
 class SingletonMeta(type):
-
+    """Abstract class for creating singleton"""
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

@@ -1,3 +1,4 @@
+# pylint: disable-all
 #   -*- coding: utf-8 -*-
 from pybuilder.core import use_plugin, init
 

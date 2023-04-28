@@ -1,22 +1,16 @@
 """Module """
-import datetime
-import re
-import json
-from datetime import datetime
-from freezegun import freeze_time
-from .order_request import OrderRequest
-from .order_management_exception import OrderManagementException
-from .order_shipping import OrderShipping
-from .order_delivery import OrderDelivery
-from .validation.tracking_code_attribute import TrackingCodeAttribute
-from .order_manager_config import JSON_FILES_PATH
-from .singleton_metaclass import SingletonMeta
+from uc3m_logistics.order_request import OrderRequest
+from uc3m_logistics.singleton_metaclass import SingletonMeta
+from uc3m_logistics.order_shipping import OrderShipping
+from uc3m_logistics.order_delivery import OrderDelivery
+
 
 class OrderManager(metaclass=SingletonMeta):
     """Class for providing the methods for managing the orders process"""
 
     # pylint: disable=too-many-arguments
-    def register_order(self, product_id,
+    @staticmethod
+    def register_order(product_id,
                        order_type,
                        address,
                        phone_number,
@@ -30,7 +24,8 @@ class OrderManager(metaclass=SingletonMeta):
         return order_request.order_id
 
     # pylint: disable=too-many-locals
-    def send_product(self, input_file):
+    @staticmethod
+    def send_product(input_file):
         """Sends the order included in the input_file"""
         my_sign = OrderShipping.from_send_input_file(input_file)
 
@@ -38,7 +33,8 @@ class OrderManager(metaclass=SingletonMeta):
 
         return my_sign.tracking_code
 
-    def deliver_product(self, tracking_code):
+    @staticmethod
+    def deliver_product(tracking_code):
         """Register the delivery of the product"""
         delivery = OrderDelivery.from_order_tracking_code(tracking_code)
 

@@ -1,9 +1,11 @@
-from .attribute import Attribute
+# pylint: disable=missing-module-docstring
 import re
-
 from uc3m_logistics.order_management_exception import OrderManagementException
+from uc3m_logistics.validation.attribute import Attribute
+
 
 class PhoneNumberAttribute(Attribute):
+    """phone_number validation"""
 
     myregex = re.compile(r"^(\+)[0-9]{11}")
 

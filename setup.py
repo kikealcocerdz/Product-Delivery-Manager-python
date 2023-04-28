@@ -25,7 +25,7 @@
 #
 # DO NOT RUN MANUALLY
 #
-
+# pylint: disable-all
 import os
 import subprocess
 import sys
