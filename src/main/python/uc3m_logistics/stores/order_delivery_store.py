@@ -7,11 +7,12 @@ class OrderDeliveryStore(JsonStore):
     """Store for OrderDelivery"""
     _FILE_PATH = JSON_FILES_PATH + "shipments_delivered.json"
 
-    def add_item(self, new_item):
+    def add_item(self, item):
         self.refresh()
-        self.data.append(new_item.tracking_code)
-        self.data.append(new_item.delivery_date)
+        self.data.append(item.tracking_code)
+        self.data.append(item.delivery_date)
         self.save()
 
     def find_item_by_key(self, key):
+        # TODO implement
         pass

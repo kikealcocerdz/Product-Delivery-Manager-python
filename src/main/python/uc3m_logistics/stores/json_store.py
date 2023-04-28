@@ -27,8 +27,8 @@ class JsonStore(ABC, metaclass=FinalMeta):
             data = []
             with open(self._FILE_PATH, "w", encoding="utf-8", newline="") as file:
                 json.dump(data, file, indent=2)
-        except json.decoder.JSONDecodeError:
-            raise OrderManagementException("JSON Decode Error - Wrong JSON Format")
+        except json.decoder.JSONDecodeError as exc:
+            raise OrderManagementException("JSON Decode Error - Wrong JSON Format") from exc
         return data
 
     def refresh(self):
@@ -43,7 +43,7 @@ class JsonStore(ABC, metaclass=FinalMeta):
             raise OrderManagementException("Wrong file or file path") from ex
 
     @abstractmethod
-    def add_item(self):
+    def add_item(self, item):
         pass
 
     @abstractmethod

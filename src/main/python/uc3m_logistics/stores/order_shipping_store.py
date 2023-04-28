@@ -17,7 +17,7 @@ class OrderShippingStore(JsonStore):
 
         return None
 
-    def add_item(self, new_shipping):
+    def add_item(self, item):
         self.refresh()
-        self.data.append(new_shipping.__dict__)
+        self.data.append(item.__dict__)
         self.save()
