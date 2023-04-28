@@ -146,7 +146,7 @@ class TestDeliverProduct(TestCase):
         with self.assertRaises(OrderManagementException) as context_manager:
             my_manager.deliver_product(
                 "847dfd443d86c9c222242010c11a44bd9a09c37b42b6e956db97ba173abefe83")
-        self.assertEqual(context_manager.exception.message, "shipments_store not found")
+        self.assertEqual(context_manager.exception.message, "tracking_code is not found")
 
     @freeze_time("2023-03-18")
     def test_deliver_product_shipments_store_is_empty(self):

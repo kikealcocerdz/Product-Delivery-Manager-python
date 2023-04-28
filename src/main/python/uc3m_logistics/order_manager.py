@@ -27,11 +27,11 @@ class OrderManager(metaclass=SingletonMeta):
     @staticmethod
     def send_product(input_file):
         """Sends the order included in the input_file"""
-        my_sign = OrderShipping.from_send_input_file(input_file)
+        shipping = OrderShipping.from_send_input_file(input_file)
 
-        my_sign.save_to_store()
+        shipping.save_to_store()
 
-        return my_sign.tracking_code
+        return shipping.tracking_code
 
     @staticmethod
     def deliver_product(tracking_code):
