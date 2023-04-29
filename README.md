@@ -1,4 +1,4 @@
-# G89.2023.T19.EG2
+# G89.2023.T19.EG4
 # Guided exercise 4: Refactoring
 
 ## Setup
