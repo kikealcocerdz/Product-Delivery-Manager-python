@@ -1,1 +1,13 @@
-# G8X.2023.TYY.EG4_CODEBASE
+# G89.2023.T19.EG2
+# Guided exercise 4: Refactoring
+
+## Setup
+- Clone repository
+- Add Python virtual environment
+- Install modules required:
+`pip install - r requirements.txt`
+
+## Authors
+**Enrique Alcocer Díaz (100472118)**
+
+**David Barroso Murcia (100472229)**
