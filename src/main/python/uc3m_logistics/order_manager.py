@@ -1,42 +1,65 @@
 """Module """
-from uc3m_logistics.order_request import OrderRequest
-from uc3m_logistics.singleton_metaclass import SingletonMeta
-from uc3m_logistics.order_shipping import OrderShipping
-from uc3m_logistics.order_delivery import OrderDelivery
 
+from uc3m_logistics.data.order_request import OrderRequest
+from uc3m_logistics.data.order_shipping import OrderShipping
+from uc3m_logistics.inputs.modify_delivery_input_file import ModifyDeliveryInputFile
 
-class OrderManager(metaclass=SingletonMeta):
-    """Class for providing the methods for managing the orders process"""
+class OrderManager:
+    """OrderManager singleton class"""
+    #pylint: disable=invalid-name
+    class __OrderManager:
+        """Order Manager private class"""
+        def __init__( self ):
+            pass
 
-    # pylint: disable=too-many-arguments
-    @staticmethod
-    def register_order(product_id,
-                       order_type,
-                       address,
-                       phone_number,
-                       zip_code):
-        """Register the orders into the order's file"""
+        # pylint: disable=too-many-arguments
+        def register_order( self, product_id: str,
+                            order_type: str,
+                            address: str,
+                            phone_number: str,
+                            zip_code: str ) -> str:
+            """Register the orders into the order's file"""
 
-        order_request = OrderRequest(product_id, order_type, address, phone_number, zip_code)
+            my_order = OrderRequest(product_id,
+                                    order_type,
+                                    address,
+                                    phone_number,
+                                    zip_code)
+            my_order.save()
+            return my_order.order_id
 
-        order_request.save_to_store()
+        # pylint: disable=too-many-locals
+        def send_product( self, input_file ):
+            """Sends the order included in the input_file"""
+            my_sign = OrderShipping.get_order_shipping_from_file(input_file)
+            my_sign.save()
+            return my_sign.tracking_code
 
-        return order_request.order_id
+        def deliver_product( self, tracking_code ):
+            """Register the delivery of the product"""
+            shipment = OrderShipping.get_order_shipping_from_tracking_code(tracking_code)
+            return shipment.deliver()
 
-    # pylint: disable=too-many-locals
-    @staticmethod
-    def send_product(input_file):
-        """Sends the order included in the input_file"""
-        shipping = OrderShipping.from_send_input_file(input_file)
+        def modify_delivery_date(self, input_file):
+            modify_input = ModifyDeliveryInputFile(input_file)
+            shipment = OrderShipping.get_order_shipping_from_tracking_code(modify_input.tracking_code)
 
-        shipping.save_to_store()
+            return shipment.modify_delivery_date(modify_input.date)
 
-        return shipping.tracking_code
+    instance = None
 
-    @staticmethod
-    def deliver_product(tracking_code):
-        """Register the delivery of the product"""
-        delivery = OrderDelivery.from_order_tracking_code(tracking_code)
+    def __new__( cls ):
+        if not OrderManager.instance:
+            OrderManager.instance = OrderManager.__OrderManager()
+        return OrderManager.instance
 
-        delivery.save_to_store()
-        return True
+    def __getattr__( self, nombre ):
+        return getattr(self.instance, nombre)
+
+    def __setattr__( self, nombre, valor ):
+        return setattr(self.instance, nombre, valor)
+
+# testeitos
+if __name__ == "__main__":
+    manager = OrderManager()
+    manager.modify_delivery_date("testinput.json")
